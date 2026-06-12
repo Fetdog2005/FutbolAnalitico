@@ -1,0 +1,48 @@
+.predictions-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 20px 70px;
+}
+
+.predictions-page__header {
+  margin-bottom: 32px;
+}
+
+.predictions-page__header span {
+  color: #0f8f4f;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.predictions-page__header h1 {
+  font-size: 42px;
+  margin: 8px 0;
+}
+
+.predictions-page__header p {
+  color: #666;
+  font-size: 17px;
+}
+
+.predictions-page__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+@media (max-width: 900px) {
+  .predictions-page__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .predictions-page__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .predictions-page__header h1 {
+    font-size: 34px;
+  }
+}

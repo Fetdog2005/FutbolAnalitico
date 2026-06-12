@@ -1,0 +1,34 @@
+.about-section {
+  padding: 5rem 2rem;
+
+  background: #132D46;
+}
+
+.about-section .container {
+  max-width: 800px;
+  margin: 0 auto;
+
+  text-align: center;
+}
+
+.about-section h2 {
+  color: #FFFFFF;
+
+  font-size: 2.2rem;
+  font-weight: 700;
+
+  margin-bottom: 1.5rem;
+}
+
+.about-section p {
+  color: rgba(255, 255, 255, 0.85);
+
+  font-size: 1.1rem;
+  line-height: 1.8;
+
+  margin-bottom: 1.5rem;
+}
+
+.about-section p:last-child {
+  margin-bottom: 0;
+}

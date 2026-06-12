@@ -1,0 +1,42 @@
+:root {
+  --bg-primary: #1A1E29;
+  --bg-secondary: #132D46;
+  --accent: #01C38E;
+
+  --text: rgba(255, 255, 255, 0.8);
+  --text-heading: #FFFFFF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text);
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}

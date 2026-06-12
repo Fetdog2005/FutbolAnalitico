@@ -1,0 +1,35 @@
+.footer {
+  background: #1A1E29;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  padding: 3rem 2rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  text-align: center;
+}
+
+.footer-content h3 {
+  color: #FFFFFF;
+
+  font-size: 1.5rem;
+  font-weight: 800;
+
+  margin-bottom: 1rem;
+}
+
+.footer-content p {
+  color: rgba(255, 255, 255, 0.75);
+
+  margin-bottom: 1rem;
+}
+
+.footer-content span {
+  color: rgba(255, 255, 255, 0.5);
+
+  font-size: 0.9rem;
+}

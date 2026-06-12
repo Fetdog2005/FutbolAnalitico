@@ -1,0 +1,57 @@
+.predictions-section {
+  padding: 4rem 2rem;
+  background: #1A1E29;
+}
+
+.predictions-section h2 {
+  color: #FFFFFF;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.predictions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.predictions-section__actions {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 2.5rem;
+}
+
+.predictions-section__actions button {
+  background: #01C38E;
+  color: #1A1E29;
+
+  border: none;
+  border-radius: 10px;
+
+  padding: 1rem 2rem;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.predictions-section__actions button:hover {
+  transform: translateY(-2px);
+}
+@media (max-width: 1100px) {
+  .predictions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .predictions-grid {
+    grid-template-columns: 1fr;
+  }
+}

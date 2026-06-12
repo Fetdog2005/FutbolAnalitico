@@ -1,0 +1,378 @@
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import type { PredictionBlock } from '../../../shared/types/Prediction'
+import { slugify } from '../../../shared/utils/slugify'
+import './AdminForm.css'
+
+import {
+  getPredictionById,
+  updatePrediction
+} from '../../../services/predictionService'
+
+export default function EditPredictionPage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+
+  const [competition, setCompetition] =
+    useState('')
+
+  const [date, setDate] =
+    useState('')
+
+  const [homeTeam, setHomeTeam] =
+    useState('')
+
+  const [awayTeam, setAwayTeam] =
+    useState('')
+
+  const [homeProbability, setHomeProbability] =
+    useState(50)
+
+  const [drawProbability, setDrawProbability] =
+    useState(25)
+
+  const [awayProbability, setAwayProbability] =
+    useState(25)
+
+  const [blocks, setBlocks] = useState<PredictionBlock[]>([])
+  const [blockTitle, setBlockTitle] = useState('')
+  const [teamAValue, setTeamAValue] = useState(50)
+  const [teamBValue, setTeamBValue] = useState(50)
+  const [blockDescription, setBlockDescription] = useState('')
+
+  useEffect(() => {
+    loadPrediction()
+  }, [])
+
+  async function loadPrediction() {
+  try {
+    if (!id) return
+
+    const prediction =
+      await getPredictionById(id)
+
+    setCompetition(
+      prediction.competition || ''
+    )
+
+    setDate(
+      prediction.date || ''
+    )
+
+    setHomeTeam(
+      prediction.homeTeam || ''
+    )
+
+    setAwayTeam(
+      prediction.awayTeam || ''
+    )
+
+    setHomeProbability(
+      prediction.homeProbability || 50
+    )
+
+    setDrawProbability(
+      prediction.drawProbability || 25
+    )
+
+    setAwayProbability(
+      prediction.awayProbability || 25
+    )
+
+    setBlocks(
+      prediction.blocks || []
+    )
+
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+function addBlock() {
+  if (!blockTitle || !blockDescription) {
+    alert('Completá el título y la descripción del bloque')
+    return
+  }
+
+  if (teamAValue + teamBValue !== 100) {
+    alert('Los valores del bloque deben sumar 100%')
+    return
+  }
+
+  setBlocks([
+    ...blocks,
+    {
+      title: blockTitle,
+      teamAValue,
+      teamBValue,
+      description: blockDescription
+    }
+  ])
+
+  setBlockTitle('')
+  setTeamAValue(50)
+  setTeamBValue(50)
+  setBlockDescription('')
+}
+
+  async function handleSubmit(
+    e: React.FormEvent
+  ) {
+    e.preventDefault()
+
+    const total =
+      homeProbability +
+      drawProbability +
+      awayProbability
+
+    if (total !== 100) {
+      alert(
+        'Las probabilidades deben sumar 100%'
+      )
+      return
+    }
+    if (!competition || !date || !homeTeam || !awayTeam) {
+  alert('Completá todos los campos')
+  return
+}
+    const updatedPrediction = {
+      competition,
+      date,
+
+      homeTeam,
+      awayTeam,
+
+      homeProbability,
+      drawProbability,
+      awayProbability,
+
+      blocks,
+
+      slug: slugify(`${homeTeam} vs ${awayTeam}`)
+    }
+
+    try {
+      await updatePrediction(
+        id!,
+        updatedPrediction
+      )
+
+      alert(
+        'Predicción actualizada'
+      )
+
+      navigate(
+        '/admin/predicciones'
+      )
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  return (
+    <div className="admin-form-page">
+
+      <h1>Editar predicción</h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="admin-form"
+      >
+
+        <label>
+          Competición
+          <input
+            value={competition}
+            onChange={(e) =>
+              setCompetition(
+                e.target.value
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Fecha
+          <input
+            type="date"
+            value={date}
+            onChange={(e) =>
+              setDate(
+                e.target.value
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Equipo local
+          <input
+            value={homeTeam}
+            onChange={(e) =>
+              setHomeTeam(
+                e.target.value
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Equipo visitante
+          <input
+            value={awayTeam}
+            onChange={(e) =>
+              setAwayTeam(
+                e.target.value
+              )
+            }
+          />
+        </label>
+
+        <h2>Probabilidades</h2>
+
+        <label>
+          Local %
+          <input
+            type="number"
+            value={homeProbability}
+            onChange={(e) =>
+              setHomeProbability(
+                Number(
+                  e.target.value
+                )
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Empate %
+          <input
+            type="number"
+            value={drawProbability}
+            onChange={(e) =>
+              setDrawProbability(
+                Number(
+                  e.target.value
+                )
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Visitante %
+          <input
+            type="number"
+            value={awayProbability}
+            onChange={(e) =>
+              setAwayProbability(
+                Number(
+                  e.target.value
+                )
+              )
+            }
+          />
+        </label>
+
+        <h2>Bloques analíticos</h2>
+            <label>
+  Título del bloque
+  <input
+    value={blockTitle}
+    onChange={(e) => setBlockTitle(e.target.value)}
+  />
+</label>
+
+<label>
+  Valor local
+  <input
+    type="number"
+    value={teamAValue}
+    onChange={(e) => setTeamAValue(Number(e.target.value))}
+  />
+</label>
+
+<label>
+  Valor visitante
+  <input
+    type="number"
+    value={teamBValue}
+    onChange={(e) => setTeamBValue(Number(e.target.value))}
+  />
+</label>
+
+<label>
+  Descripción
+  <textarea
+    rows={4}
+    value={blockDescription}
+    onChange={(e) => setBlockDescription(e.target.value)}
+  />
+</label>
+
+<button type="button" onClick={addBlock}>
+  Agregar bloque
+</button>
+        {blocks.length === 0 ? (
+          <p>
+            No hay bloques cargados.
+          </p>
+        ) : (
+          blocks.map(
+            (
+              block,
+              index
+            ) => (
+              <div
+                key={index}
+                style={{
+                  border:
+                    '1px solid #334155',
+                  borderRadius: '8px',
+                  padding: '1rem',
+                  marginBottom: '1rem'
+                }}
+              >
+                <strong>
+                  {block.title}
+                </strong>
+
+                <p>
+                  {block.teamAValue}
+                  {' - '}
+                  {block.teamBValue}
+                </p>
+
+                <p>
+                  {block.description}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setBlocks(
+                      blocks.filter(
+                        (_, i) =>
+                          i !== index
+                      )
+                    )
+                  }
+                >
+                  Eliminar bloque
+                </button>
+              </div>
+            )
+          )
+        )}
+
+        <button type="submit">
+          Guardar cambios
+        </button>
+
+      </form>
+
+    </div>
+  )
+}
