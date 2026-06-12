@@ -25,52 +25,40 @@ export default function PredictionCard({
   homeProbability,
   drawProbability,
   awayProbability
-
 }: PredictionCardProps) {
-
   return (
-    
-    <article className="prediction-card">
-        <Link
-  to={`/categoria/${competition
-    .toLowerCase()
-    .replaceAll(' ', '-')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')}`}
-  className="prediction-card__competition"
->
-  {competition}
-</Link>
+    <Link to={`/predicciones/${slug}`} className="prediction-card">
+      <span className="prediction-card__competition">
+        {competition}
+      </span>
+
       <div className="prediction-card__header">
         <div className="team">
           <div className="team-logo">
-  {homeLogo ? (
-    <img
-      src={homeLogo}
-      alt={homeTeam}
-    />
-  ) : (
-    homeTeam.charAt(0)
-  )}
-</div>
+            {homeLogo ? (
+              <img src={homeLogo} alt={homeTeam} />
+            ) : (
+              homeTeam.charAt(0)
+            )}
+          </div>
+
           <span>{homeTeam}</span>
         </div>
 
         <div className="match-date">
           <span>{date}</span>
+          <strong>VS</strong>
         </div>
 
         <div className="team">
           <div className="team-logo">
-  {awayLogo ? (
-    <img
-      src={awayLogo}
-      alt={awayTeam}
-    />
-  ) : (
-    awayTeam.charAt(0)
-  )}
-</div>
+            {awayLogo ? (
+              <img src={awayLogo} alt={awayTeam} />
+            ) : (
+              awayTeam.charAt(0)
+            )}
+          </div>
+
           <span>{awayTeam}</span>
         </div>
       </div>
@@ -93,17 +81,14 @@ export default function PredictionCard({
       </div>
 
       <div className="prediction-card__percentages">
-        <span>{homeProbability}%</span>
-        <span>{drawProbability}%</span>
-        <span>{awayProbability}%</span>
+        <span>{homeProbability}% Local</span>
+        <span>{drawProbability}% Empate</span>
+        <span>{awayProbability}% Visitante</span>
       </div>
 
-      <Link
-  to={`/predicciones/${slug}`}
-  className="prediction-card__button"
->
-  Ver análisis
-</Link>
-    </article>
+      <span className="prediction-card__button">
+        Ver análisis
+      </span>
+    </Link>
   )
 }
