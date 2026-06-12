@@ -1,35 +1,126 @@
 .footer {
-  background: #1A1E29;
-
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(1, 195, 142, 0.16), transparent 34%),
+    linear-gradient(180deg, #132d46 0%, #1a1e29 70%);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4rem 2rem 2rem;
+}
 
-  padding: 3rem 2rem;
+.footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+  pointer-events: none;
 }
 
 .footer-content {
+  position: relative;
+  z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
-
   text-align: center;
 }
 
-.footer-content h3 {
-  color: #FFFFFF;
+.footer-logo {
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  text-decoration: none;
+}
 
-  font-size: 1.5rem;
+.footer-logo span {
+  color: #01c38e;
+}
+
+.footer-brand p {
+  max-width: 620px;
+  margin: 1rem auto 2rem;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.footer-links a {
+  color: #ffffff;
+  text-decoration: none;
   font-weight: 800;
-
-  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  transition: 0.2s ease;
 }
 
-.footer-content p {
-  color: rgba(255, 255, 255, 0.75);
-
-  margin-bottom: 1rem;
+.footer-links a:hover {
+  color: #01c38e;
+  border-color: rgba(1, 195, 142, 0.55);
+  background: rgba(1, 195, 142, 0.12);
+  transform: translateY(-2px);
 }
 
-.footer-content span {
-  color: rgba(255, 255, 255, 0.5);
+.footer-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: rgba(1, 195, 142, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(1, 195, 142, 0.35);
+  border-radius: 999px;
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 2rem;
+}
 
+.footer-highlight span {
+  font-size: 1.3rem;
+}
+
+.footer-highlight strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+}
+
+.footer-bottom {
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-bottom span {
+  color: rgba(255, 255, 255, 0.52);
   font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 3rem 1rem 2rem;
+  }
+
+  .footer-links {
+    gap: 0.6rem;
+  }
+
+  .footer-links a {
+    font-size: 0.85rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .footer-highlight {
+    border-radius: 18px;
+    align-items: flex-start;
+  }
 }
