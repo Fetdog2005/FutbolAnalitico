@@ -1,11 +1,5 @@
-import CategoryPage from '../CategoryPage/CategoryPage'
+import { Navigate } from 'react-router-dom'
 
 export default function ArgentinaPage() {
-  return (
-    <CategoryPage
-      title="Selección Argentina"
-      description="Noticias, análisis y actualidad de la Selección Argentina."
-      category="Selección Argentina"
-    />
-  )
+  return <Navigate to="/categoria/seleccion-argentina" replace />
 }

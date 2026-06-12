@@ -1,11 +1,5 @@
-import CategoryPage from '../CategoryPage/CategoryPage'
+import { Navigate } from 'react-router-dom'
 
 export default function WorldCupPage() {
-  return (
-    <CategoryPage
-      title="Mundial 2026"
-      description="Toda la actualidad, predicciones y noticias del Mundial 2026."
-      category="Mundial 2026"
-    />
-  )
+  return <Navigate to="/categoria/mundial-2026" replace />
 }
