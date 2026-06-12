@@ -23,7 +23,7 @@ export async function getNewsBySlug(
     throw new Error('Noticia no encontrada')
   }
 
-  return response.json()s
+  return response.json()
 }
 
 export async function createNews(
