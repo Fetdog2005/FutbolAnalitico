@@ -5,8 +5,6 @@ import NewsPage from './features/pages/NewsPage/NewsPage'
 import NewsDetailPage from './features/pages/NewsDetailPage/NewsDetailPage'
 import PredictionsPage from './features/pages/PredictionsPage/PredictionsPage'
 import PredictionDetailPage from './features/pages/PredictionDetailPage/PredictionDetailPage'
-import ArgentinaPage from './features/pages/ArgentinaPage/ArgentinaPage'
-import WorldCupPage from './features/pages/WorldCupPage/WorldCupPage'
 import PublicLayout from './shared/PublicLayout/PublicLayout'
 import SearchPage from './features/pages/SearchPage/SearchPage'
 import AdminLayout from './features/admin/AdminLayout'
@@ -32,8 +30,6 @@ function App() {
     <Route path="/predicciones" element={<PredictionsPage />} />
     <Route path="/predicciones/:slug" element={<PredictionDetailPage />} />
 
-    <Route path="/seleccion-argentina" element={<ArgentinaPage />} />
-    <Route path="/mundial-2026" element={<WorldCupPage />} />
     <Route path="/buscar" element={<SearchPage />} />
     <Route path="/categoria/:category" element={<CategoryPage />} />
     <Route path="*" element={<NotFoundPage />} />
