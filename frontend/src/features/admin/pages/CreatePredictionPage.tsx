@@ -1,131 +1,133 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPrediction } from '../../../services/predictionService'
+import {
+  getCompetitions,
+  getTeamsByCompetition
+} from '../../../services/contentService'
 import type { PredictionBlock } from '../../../shared/types/Prediction'
 import { slugify } from '../../../shared/utils/slugify'
-import { uploadImage } from '../../../services/uploadService'
 import './AdminForm.css'
 
+type Competition = {
+  _id: string
+  name: string
+}
+
+type Team = {
+  _id: string
+  name: string
+  logo: string
+  competitionId: string
+}
+
 export default function CreatePredictionPage() {
-  const [competition, setCompetition] =
-    useState('')
+  const [competitions, setCompetitions] = useState<Competition[]>([])
+  const [teams, setTeams] = useState<Team[]>([])
 
-  const [date, setDate] =
-    useState('')
+  const [competitionId, setCompetitionId] = useState('')
+  const [homeTeamId, setHomeTeamId] = useState('')
+  const [awayTeamId, setAwayTeamId] = useState('')
+  const [date, setDate] = useState('')
 
-  const [homeTeam, setHomeTeam] =
-    useState('')
-
-  const [awayTeam, setAwayTeam] =
-    useState('')
-
-  const [homeLogo, setHomeLogo] = useState('')
-
-  const [awayLogo, setAwayLogo] = useState('')
-
-  const [homeProbability, setHomeProbability] =
-    useState(50)
-
-  const [drawProbability, setDrawProbability] =
-    useState(25)
-
-  const [awayProbability, setAwayProbability] =
-    useState(25)
+  const [homeProbability, setHomeProbability] = useState(50)
+  const [drawProbability, setDrawProbability] = useState(25)
+  const [awayProbability, setAwayProbability] = useState(25)
 
   const [blocks, setBlocks] = useState<PredictionBlock[]>([])
 
-  const [blockTitle, setBlockTitle] =
-    useState('')
+  const [blockTitle, setBlockTitle] = useState('')
+  const [teamAValue, setTeamAValue] = useState(50)
+  const [teamBValue, setTeamBValue] = useState(50)
+  const [blockDescription, setBlockDescription] = useState('')
 
-  const [teamAValue, setTeamAValue] =
-    useState(50)
+  useEffect(() => {
+    loadCompetitions()
+  }, [])
 
-  const [teamBValue, setTeamBValue] =
-    useState(50)
+  async function loadCompetitions() {
+    try {
+      const data = await getCompetitions()
+      setCompetitions(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
-  const [blockDescription, setBlockDescription] =
-    useState('')
+  async function handleCompetitionChange(id: string) {
+    setCompetitionId(id)
+    setHomeTeamId('')
+    setAwayTeamId('')
+
+    try {
+      const data = await getTeamsByCompetition(id)
+      setTeams(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   function addBlock() {
     if (!blockTitle || !blockDescription) {
-  alert('Completá el título y la descripción del bloque')
-  return
-}
+      alert('Completá título y descripción')
+      return
+    }
 
-if (teamAValue + teamBValue !== 100) {
-  alert('Los valores del bloque deben sumar 100%')
-  
-  return
-}
-    const newBlock = {
-      title: blockTitle,
-      teamAValue,
-      teamBValue,
-      description: blockDescription
+    if (teamAValue + teamBValue !== 100) {
+      alert('Los valores deben sumar 100%')
+      return
     }
 
     setBlocks([
       ...blocks,
-      newBlock
+      {
+        title: blockTitle,
+        teamAValue,
+        teamBValue,
+        description: blockDescription
+      }
     ])
-    
+
     setBlockTitle('')
     setTeamAValue(50)
     setTeamBValue(50)
     setBlockDescription('')
   }
-async function handleHomeLogoUpload(
-  e: React.ChangeEvent<HTMLInputElement>
-) {
-  const file = e.target.files?.[0]
 
-  if (!file) return
-
-  const data = await uploadImage(file)
-
-  setHomeLogo(data.url)
-}
-
-async function handleAwayLogoUpload(
-  e: React.ChangeEvent<HTMLInputElement>
-) {
-  const file = e.target.files?.[0]
-
-  if (!file) return
-
-  const data = await uploadImage(file)
-
-  setAwayLogo(data.url)
-}
-
-  async function handleSubmit(
-    e: React.FormEvent
-  ) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    const total =
-      homeProbability +
-      drawProbability +
-      awayProbability
+    const total = homeProbability + drawProbability + awayProbability
 
     if (total !== 100) {
-      alert(
-        'Las probabilidades deben sumar 100%'
-      )
+      alert('Las probabilidades deben sumar 100%')
       return
     }
-    if (!competition || !homeTeam || !awayTeam || !date) {
-    alert('Completá todos los campos')
-    return
-}
-    const prediction = {
-      slug: slugify(`${homeTeam} vs ${awayTeam}`),
 
-      competition,
+    const competition = competitions.find((c) => c._id === competitionId)
+    const home = teams.find((t) => t._id === homeTeamId)
+    const away = teams.find((t) => t._id === awayTeamId)
+
+    if (!competition || !home || !away || !date) {
+      alert('Completá todos los campos')
+      return
+    }
+
+    const prediction = {
+      slug: slugify(`${home.name} vs ${away.name}`),
+
+      competition: competition.name,
+      competitionId,
+
+      homeTeam: home.name,
+      awayTeam: away.name,
+
+      homeTeamId,
+      awayTeamId,
+
+      homeLogo: home.logo,
+      awayLogo: away.logo,
+
       date,
-      homeLogo,
-      awayLogo,
-      homeTeam,
-      awayTeam,
 
       homeProbability,
       drawProbability,
@@ -135,23 +137,20 @@ async function handleAwayLogoUpload(
     }
 
     try {
-      await createPrediction(
-        prediction
-      )
+      await createPrediction(prediction)
 
-      alert(
-        'Predicción creada'
-      )
-      setCompetition('')
+      alert('Predicción creada')
+
+      setCompetitionId('')
+      setHomeTeamId('')
+      setAwayTeamId('')
       setDate('')
-      setHomeTeam('')
-      setAwayTeam('')
-      setHomeLogo('')
-      setAwayLogo('')
+
+      setBlocks([])
+
       setHomeProbability(50)
       setDrawProbability(25)
       setAwayProbability(25)
-      setBlocks([])
     } catch (error) {
       console.error(error)
     }
@@ -159,202 +158,124 @@ async function handleAwayLogoUpload(
 
   return (
     <div className="admin-form-page">
-
       <h1>Crear Predicción</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="admin-form"
-      >
-
+      <form onSubmit={handleSubmit} className="admin-form">
         <label>
           Competición
-          <input
-            value={competition}
-            onChange={(e) =>
-              setCompetition(
-                e.target.value
-              )
-            }
-          />
+
+          <select
+            value={competitionId}
+            onChange={(e) => handleCompetitionChange(e.target.value)}
+          >
+            <option value="">Seleccionar competición</option>
+
+            {competitions.map((competition) => (
+              <option key={competition._id} value={competition._id}>
+                {competition.name}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label>
           Fecha
+
           <input
             type="date"
             value={date}
-            onChange={(e) =>
-              setDate(
-                e.target.value
-              )
-            }
+            onChange={(e) => setDate(e.target.value)}
           />
         </label>
 
         <label>
           Equipo local
-          <input
-  value={homeTeam}
-  onChange={(e) => setHomeTeam(e.target.value)}
-/>
 
-<input
-  type="file"
-  accept="image/*"
-  onChange={handleHomeLogoUpload}
-/>
+          <select
+            value={homeTeamId}
+            onChange={(e) => setHomeTeamId(e.target.value)}
+          >
+            <option value="">Seleccionar equipo</option>
 
-{homeLogo && (
-  <img
-    src={homeLogo}
-    alt=""
-    style={{
-      width: '60px',
-      borderRadius: '50%'
-    }}
-  />
-)}
+            {teams.map((team) => (
+              <option key={team._id} value={team._id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label>
           Equipo visitante
-          <input
-  value={awayTeam}
-  onChange={(e) => setAwayTeam(e.target.value)}
-/>
 
-<input
-  type="file"
-  accept="image/*"
-  onChange={handleAwayLogoUpload}
-/>
+          <select
+            value={awayTeamId}
+            onChange={(e) => setAwayTeamId(e.target.value)}
+          >
+            <option value="">Seleccionar equipo</option>
 
-{awayLogo && (
-  <img
-    src={awayLogo}
-    alt=""
-    style={{
-      width: '60px',
-      borderRadius: '50%'
-    }}
-  />
-)}
+            {teams.map((team) => (
+              <option key={team._id} value={team._id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
         </label>
 
         <h2>Probabilidades</h2>
 
-        <label>
-          Local %
-          <input
-            type="number"
-            value={homeProbability}
-            onChange={(e) =>
-              setHomeProbability(
-                Number(e.target.value)
-              )
-            }
-          />
-        </label>
+        <input
+          type="number"
+          value={homeProbability}
+          onChange={(e) => setHomeProbability(Number(e.target.value))}
+        />
 
-        <label>
-          Empate %
-          <input
-            type="number"
-            value={drawProbability}
-            onChange={(e) =>
-              setDrawProbability(
-                Number(e.target.value)
-              )
-            }
-          />
-        </label>
+        <input
+          type="number"
+          value={drawProbability}
+          onChange={(e) => setDrawProbability(Number(e.target.value))}
+        />
 
-        <label>
-          Visitante %
-          <input
-            type="number"
-            value={awayProbability}
-            onChange={(e) =>
-              setAwayProbability(
-                Number(e.target.value)
-              )
-            }
-          />
-        </label>
+        <input
+          type="number"
+          value={awayProbability}
+          onChange={(e) => setAwayProbability(Number(e.target.value))}
+        />
 
         <h2>Bloques Analíticos</h2>
 
-        <label>
-          Título
-          <input
-            value={blockTitle}
-            onChange={(e) =>
-              setBlockTitle(
-                e.target.value
-              )
-            }
-          />
-        </label>
+        <input
+          placeholder="Título"
+          value={blockTitle}
+          onChange={(e) => setBlockTitle(e.target.value)}
+        />
 
-        <label>
-          Valor Local
-          <input
-            type="number"
-            value={teamAValue}
-            onChange={(e) =>
-              setTeamAValue(
-                Number(e.target.value)
-              )
-            }
-          />
-        </label>
+        <input
+          type="number"
+          value={teamAValue}
+          onChange={(e) => setTeamAValue(Number(e.target.value))}
+        />
 
-        <label>
-          Valor Visitante
-          <input
-            type="number"
-            value={teamBValue}
-            onChange={(e) =>
-              setTeamBValue(
-                Number(e.target.value)
-              )
-            }
-          />
-        </label>
+        <input
+          type="number"
+          value={teamBValue}
+          onChange={(e) => setTeamBValue(Number(e.target.value))}
+        />
 
-        <label>
-          Descripción
-          <textarea
-            rows={4}
-            value={blockDescription}
-            onChange={(e) =>
-              setBlockDescription(
-                e.target.value
-              )
-            }
-          />
-        </label>
+        <textarea
+          rows={4}
+          value={blockDescription}
+          onChange={(e) => setBlockDescription(e.target.value)}
+        />
 
-        <button
-          type="button"
-          onClick={addBlock}
-        >
+        <button type="button" onClick={addBlock}>
           Agregar bloque
         </button>
 
-        <p>
-          Bloques creados:
-          {' '}
-          {blocks.length}
-        </p>
+        <p>Bloques creados: {blocks.length}</p>
 
-        <button type="submit">
-          Crear predicción
-        </button>
-
+        <button type="submit">Crear predicción</button>
       </form>
-
     </div>
   )
 }
