@@ -34,113 +34,124 @@ export default function NewsDetailPage() {
   }
 
   return (
-    
     <>
-  <Helmet>
-    <meta property="og:title" content={news.title} />
-    <meta property="og:description" content={news.subtitle} />
-    <meta property="og:image" content={news.image} />
-    <meta property="og:type" content="article" />
-    <link
-  rel="canonical"
-  href={`https://futbolanalitico.com/noticias/${news.slug}`}
-/>
-    <title>{news.title} | Futbol Analítico</title>
+      <Helmet>
+        <meta property="og:title" content={news.title} />
+        <meta property="og:description" content={news.subtitle} />
+        <meta property="og:image" content={news.image} />
+        <meta property="og:type" content="article" />
 
-    <meta
-      name="description"
-      content={news.subtitle}
-    />
-  </Helmet>
+        <link
+          rel="canonical"
+          href={`https://futbolanalitico.com/noticias/${news.slug}`}
+        />
 
-  <div className="news-detail">
-      <img
-        className="news-detail__hero"
-        src={news.image}
-        alt={news.title}
-      />
+        <title>{news.title} | Futbol Analítico</title>
 
-      <span className="news-detail__category">
-        {news.category}
-      </span>
+        <meta
+          name="description"
+          content={news.subtitle}
+        />
+      </Helmet>
 
-      <h1 className="news-detail__title">
-        {news.title}
-      </h1>
+      <div className="news-detail">
+        {news.image && (
+          <img
+            className="news-detail__hero"
+            src={news.image}
+            alt={news.title}
+          />
+        )}
 
-      <p className="news-detail__subtitle">
-        {news.subtitle}
-      </p>
+        <span className="news-detail__category">
+          {news.category}
+        </span>
 
-        <p className="news-detail__date">
-          {new Date(news.createdAt).toLocaleDateString('es-AR')}
+        <h1 className="news-detail__title">
+          {news.title}
+        </h1>
+
+        <p className="news-detail__subtitle">
+          {news.subtitle}
         </p>
 
-      {news.sections.map((section, index) => {
-        switch (section.type) {
-          case 'text':
-            return (
-              <p
-                key={index}
-                className="news-detail__text"
-              >
-                {section.content}
-              </p>
-            )
+        {news.createdAt && (
+          <p className="news-detail__date">
+            {new Date(news.createdAt).toLocaleDateString('es-AR')}
+          </p>
+        )}
 
-          case 'image-right':
-            return (
-              <div
-                key={index}
-                className="news-detail__section"
-              >
-                <p>{section.content}</p>
+        {(news.sections || []).map((section, index) => {
+          switch (section.type) {
+            case 'text':
+              return (
+                <p
+                  key={index}
+                  className="news-detail__text"
+                >
+                  {section.content}
+                </p>
+              )
 
+            case 'image-right':
+              return (
+                <div
+                  key={index}
+                  className="news-detail__section"
+                >
+                  <p>{section.content}</p>
+
+                  {section.image && (
+                    <img
+                      src={section.image}
+                      alt=""
+                    />
+                  )}
+                </div>
+              )
+
+            case 'image-left':
+              return (
+                <div
+                  key={index}
+                  className="news-detail__section news-detail__section--reverse"
+                >
+                  {section.image && (
+                    <img
+                      src={section.image}
+                      alt=""
+                    />
+                  )}
+
+                  <p>{section.content}</p>
+                </div>
+              )
+
+            case 'image-full':
+              return section.image ? (
                 <img
+                  key={index}
+                  className="news-detail__image-full"
                   src={section.image}
                   alt=""
                 />
-              </div>
-            )
+              ) : null
 
-          case 'image-left':
-            return (
-              <div
-                key={index}
-                className="news-detail__section news-detail__section--reverse"
-              >
-                <img
-                  src={section.image}
-                  alt=""
-                />
+            default:
+              return null
+          }
+        })}
 
-                <p>{section.content}</p>
-              </div>
-            )
-
-          case 'image-full':
-            return (
-              <img
-                key={index}
-                className="news-detail__image-full"
-                src={section.image}
-                alt=""
-              />
-            )
-
-          default:
-            return null
-        }
-      })}
-
-            <div className="news-detail__hashtags">
-        {news.hashtags.map((tag: string) => (
-          <span key={tag}>
-            #{tag}
-          </span>
-        ))}
+        {news.hashtags?.length > 0 && (
+          <div className="news-detail__hashtags">
+            {news.hashtags.map((tag: string) => (
+              <span key={tag}>
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
-  </>
-)
+    </>
+  )
 }

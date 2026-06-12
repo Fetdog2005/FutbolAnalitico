@@ -25,7 +25,7 @@ type Media = {
   _id: string
   url: string
   title?: string
-  hashtag?: string
+  hashtags?: string[]
 }
 
 type Team = {

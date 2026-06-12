@@ -13,7 +13,10 @@ const NewsSchema = new mongoose.Schema(
     image: String,
 
     hashtags: [String],
+    
+    competition: String,
 
+    teams: [String],
     // NUEVO
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,

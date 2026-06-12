@@ -111,10 +111,22 @@ exports.createMedia = async (req, res) => {
 
 exports.searchMediaByHashtag = async (req, res) => {
   try {
-    const { hashtag } = req.query
+    const hashtag = String(req.query.hashtag || '')
+      .replace('#', '')
+      .trim()
+
+    if (!hashtag) {
+      const media = await Media.find().sort({
+        createdAt: -1
+      })
+
+      return res.json(media)
+    }
 
     const media = await Media.find({
-      hashtags: hashtag
+      hashtags: {
+        $in: [hashtag, `#${hashtag}`]
+      }
     }).sort({
       createdAt: -1
     })
