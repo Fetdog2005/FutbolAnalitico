@@ -17,6 +17,12 @@ import EditNewsPage from './features/admin/pages/EditNewsPage'
 import EditPredictionPage from './features/admin/pages/EditPredictionPage'
 import CategoryPage from './features/pages/CategoryPage/CategoryPage'
 import NotFoundPage from './features/pages/NotFoundPage/NotFoundPage'
+import AdminCategoriesPage from './features/admin/pages/AdminCategoriesPage'
+import AdminHashtagsPage from './features/admin/pages/AdminHashtagsPage'
+import AdminMediaPage from './features/admin/pages/AdminMediaPage'
+import AdminCompetitionsPage from './features/admin/pages/AdminCompetitionsPage'
+import AdminTeamsPage from './features/admin/pages/AdminTeamsPage'
+
 function App() {
   return (
     <Routes>
@@ -45,6 +51,31 @@ function App() {
     <Route path="predicciones" element={<AdminPredictionsPage />} />
     <Route path="predicciones/crear" element={<CreatePredictionPage />} />
     <Route path="predicciones/editar/:id" element={<EditPredictionPage />} />
+
+    <Route
+  path="categorias"
+  element={<AdminCategoriesPage />}
+/>
+
+<Route
+  path="hashtags"
+  element={<AdminHashtagsPage />}
+/>
+
+<Route
+  path="media"
+  element={<AdminMediaPage />}
+/>
+
+<Route
+  path="competiciones"
+  element={<AdminCompetitionsPage />}
+/>
+
+<Route
+  path="equipos"
+  element={<AdminTeamsPage />}
+/>
   </Route>
 
 </Routes>

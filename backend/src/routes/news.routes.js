@@ -11,9 +11,9 @@ const {
 } = require('../controllers/news.controller')
 
 router.get('/', getNews)
-router.get('/:slug', getNewsBySlug)
 router.post('/', createNews)
 router.put('/:id', updateNews)
 router.delete('/:id', deleteNews)
 router.get('/id/:id', getNewsById)
+router.get('/:slug', getNewsBySlug)
 module.exports = router

@@ -210,13 +210,10 @@ async function handleSectionImageUpload(
 
 {image && (
   <img
-    src={image}
-    alt="Preview"
-    style={{
-      width: '180px',
-      borderRadius: '10px'
-    }}
-  />
+  src={image}
+  alt="Preview"
+  className="image-preview"
+/>
 )}
 <h2>Secciones de la noticia</h2>
 
@@ -256,14 +253,9 @@ async function handleSectionImageUpload(
 <p>Secciones creadas: {sections.length}</p>
 {sections.map((section, index) => (
   <div
-    key={index}
-    style={{
-      border: '1px solid #334155',
-      padding: '1rem',
-      borderRadius: '8px',
-      marginBottom: '1rem'
-    }}
-  >
+  key={index}
+  className="section-preview"
+>
     <strong>{section.type}</strong>
 
     {'content' in section && (
@@ -272,14 +264,10 @@ async function handleSectionImageUpload(
 
     {'image' in section && section.image && (
       <img
-        src={section.image}
-        alt=""
-        style={{
-          width: '150px',
-          marginTop: '10px',
-          borderRadius: '8px'
-        }}
-      />
+  src={section.image}
+  alt=""
+  className="section-image-preview"
+/>
     )}
   
     <button

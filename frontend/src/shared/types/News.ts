@@ -7,15 +7,18 @@ export type NewsSection =
       type: 'image-left'
       content: string
       image: string
+      mediaId?: string
     }
   | {
       type: 'image-right'
       content: string
       image: string
+      mediaId?: string
     }
   | {
       type: 'image-full'
       image: string
+      mediaId?: string
     }
 
 export type News = {
@@ -30,7 +33,13 @@ export type News = {
 
   category: string
 
+  categoryId?: string
+
   image: string
+
+  featuredMediaId?: string
+
+  mediaIds?: string[]
 
   sections: NewsSection[]
 

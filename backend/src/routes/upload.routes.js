@@ -21,7 +21,10 @@ router.post(
   upload.single('image'),
   (req, res) => {
     res.json({
-      url: req.file.path
+      url: req.file.path,
+      public_id:
+        req.file.filename ||
+        req.file.public_id
     })
   }
 )

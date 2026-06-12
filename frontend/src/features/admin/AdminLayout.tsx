@@ -24,33 +24,57 @@ export default function AdminLayout() {
         <h2>FutbolAnalítico</h2>
 
         <nav>
-          <Link to="/admin">
-            Dashboard
-          </Link>
+  <Link to="/admin">
+    Dashboard
+  </Link>
 
-          <Link to="/admin/noticias">
-            Noticias
-          </Link>
+  <Link to="/admin/noticias">
+    Noticias
+  </Link>
 
-          <Link to="/admin/noticias/crear">
-            Crear noticia
-          </Link>
+  <Link to="/admin/noticias/crear">
+    Crear noticia
+  </Link>
 
-          <Link to="/admin/predicciones">
-            Predicciones
-          </Link>
+  <Link to="/admin/predicciones">
+    Predicciones
+  </Link>
 
-          <Link to="/admin/predicciones/crear">
-            Crear predicción
-          </Link>
+  <Link to="/admin/predicciones/crear">
+    Crear predicción
+  </Link>
 
-          <button
-            className="admin-logout"
-            onClick={logout}
-          >
-            Cerrar sesión
-          </button>
-        </nav>
+  <hr />
+
+  <Link to="/admin/categorias">
+    Categorías
+  </Link>
+
+  <Link to="/admin/hashtags">
+    Hashtags
+  </Link>
+
+  <Link to="/admin/media">
+    Biblioteca multimedia
+  </Link>
+
+  <hr />
+
+  <Link to="/admin/competiciones">
+    Competiciones
+  </Link>
+
+  <Link to="/admin/equipos">
+    Equipos
+  </Link>
+
+  <button
+    className="admin-logout"
+    onClick={logout}
+  >
+    Cerrar sesión
+  </button>
+</nav>
       </aside>
 
       <main className="admin-content">

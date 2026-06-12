@@ -1,37 +1,53 @@
 const mongoose = require('mongoose')
 
-const PredictionSchema =
-  new mongoose.Schema(
-    {
-      slug: String,
+const PredictionSchema = new mongoose.Schema(
+  {
+    slug: String,
 
-      competition: String,
+    // LEGACY
+    competition: String,
 
-      homeTeam: String,
-      awayTeam: String,
+    homeTeam: String,
+    awayTeam: String,
 
-      homeLogo: String,
-      awayLogo: String,
+    homeLogo: String,
+    awayLogo: String,
 
-      date: String,
-
-      homeProbability: Number,
-      drawProbability: Number,
-      awayProbability: Number,
-
-      blocks: [
-        {
-          title: String,
-          teamAValue: Number,
-          teamBValue: Number,
-          description: String
-        }
-      ]
+    // NUEVO
+    competitionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Competition'
     },
-    {
-      timestamps: true
-    }
-  )
+
+    homeTeamId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Team'
+    },
+
+    awayTeamId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Team'
+    },
+
+    date: String,
+
+    homeProbability: Number,
+    drawProbability: Number,
+    awayProbability: Number,
+
+    blocks: [
+      {
+        title: String,
+        teamAValue: Number,
+        teamBValue: Number,
+        description: String
+      }
+    ]
+  },
+  {
+    timestamps: true
+  }
+)
 
 module.exports = mongoose.model(
   'Prediction',
