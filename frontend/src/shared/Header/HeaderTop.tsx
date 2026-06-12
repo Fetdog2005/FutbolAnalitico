@@ -13,7 +13,8 @@ export default function HeaderTop() {
   const [password, setPassword] = useState('')
   const [search, setSearch] = useState('')
 
-  const showPassword = username.toLowerCase() === 'W4zn3'
+  const showPassword =
+  username.toLowerCase() === 'w4zn3'
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
