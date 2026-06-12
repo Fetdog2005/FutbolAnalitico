@@ -14,7 +14,6 @@ export default function PredictionsSection() {
     async function loadPredictions() {
       try {
         const data = await getPredictions()
-
         setPredictions(data.slice(0, 6))
       } catch (error) {
         console.error(error)
@@ -24,15 +23,29 @@ export default function PredictionsSection() {
     loadPredictions()
   }, [])
 
+  if (predictions.length === 0) return null
+
   return (
     <section className="predictions-section">
       <div className="container">
-        <h2>Predicciones de la jornada</h2>
+        <div className="predictions-section__header">
+          <div>
+            <span>Pronósticos</span>
+            <h2>Predicciones de la jornada</h2>
+          </div>
+
+          <Link
+            to="/predicciones"
+            className="predictions-section__link"
+          >
+            Ver todas
+          </Link>
+        </div>
 
         <div className="predictions-grid">
           {predictions.map((prediction) => (
             <PredictionCard
-              key={prediction._id}
+              key={prediction._id || prediction.slug}
               slug={prediction.slug}
               competition={prediction.competition}
               homeLogo={prediction.homeLogo}
@@ -45,12 +58,6 @@ export default function PredictionsSection() {
               awayProbability={prediction.awayProbability}
             />
           ))}
-        </div>
-
-        <div className="predictions-section__actions">
-          <Link to="/predicciones">
-  <button>Ver más predicciones</button>
-</Link>
         </div>
       </div>
     </section>
