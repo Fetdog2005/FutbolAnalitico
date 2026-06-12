@@ -4,7 +4,6 @@ const PredictionSchema = new mongoose.Schema(
   {
     slug: String,
 
-    // LEGACY
     competition: String,
 
     homeTeam: String,
@@ -13,8 +12,7 @@ const PredictionSchema = new mongoose.Schema(
     homeLogo: String,
     awayLogo: String,
 
-    // NUEVO
-    competitionId: {
+      competitionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Competition'
     },
@@ -38,9 +36,12 @@ const PredictionSchema = new mongoose.Schema(
     blocks: [
       {
         title: String,
-        teamAValue: Number,
-        teamBValue: Number,
-        description: String
+        items: [
+          {
+            label: String,
+            value: String
+          }
+        ]
       }
     ]
   },
