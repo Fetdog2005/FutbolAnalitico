@@ -6,16 +6,14 @@ import { getNews } from '../../../services/newsService'
 import type { News } from '../../../shared/types/News'
 
 export default function HeroNews() {
-  const [news, setNews] = useState<News | null>(null)
+  const [newsList, setNewsList] = useState<News[]>([])
+  const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
     async function loadNews() {
       try {
         const data = await getNews()
-
-        if (data.length > 0) {
-          setNews(data[0])
-        }
+        setNewsList(data.slice(0, 3))
       } catch (error) {
         console.error(error)
       }
@@ -24,35 +22,69 @@ export default function HeroNews() {
     loadNews()
   }, [])
 
-  if (!news) return null
+  useEffect(() => {
+    if (newsList.length <= 1) return
+
+    const interval = window.setInterval(() => {
+      setActiveIndex((current) =>
+        current === newsList.length - 1 ? 0 : current + 1
+      )
+    }, 5000)
+
+    return () => window.clearInterval(interval)
+  }, [newsList.length])
+
+  if (newsList.length === 0) return null
+
+  const activeNews = newsList[activeIndex]
 
   return (
     <section className="hero-news">
-      <img
-        src={news.image}
-        alt={news.title}
-      />
+      <Link
+        to={`/noticias/${activeNews.slug}`}
+        className="hero-news__link"
+      >
+        <img
+          src={activeNews.image}
+          alt={activeNews.title}
+          className="hero-news__image"
+        />
 
-      <div className="overlay" />
+        <div className="hero-news__overlay" />
 
-      <div className="content">
-        <span className="tag">
-          {news.category}
-        </span>
+        <div className="hero-news__content">
+          <span className="hero-news__tag">
+            {activeNews.category}
+          </span>
 
-        <h1>
-          {news.title}
-        </h1>
+          <h1>
+            {activeNews.title}
+          </h1>
 
-        <p>
-          {news.subtitle}
-        </p>
+          <p>
+            {activeNews.subtitle}
+          </p>
 
-        <Link to={`/noticias/${news.slug}`}>
-          <button>
-            Ver más
-          </button>
-        </Link>
+          <span className="hero-news__button">
+            Ver noticia
+          </span>
+        </div>
+      </Link>
+
+      <div className="hero-news__dots">
+        {newsList.map((item, index) => (
+          <button
+            key={item._id || item.slug}
+            type="button"
+            className={
+              index === activeIndex
+                ? 'hero-news__dot hero-news__dot--active'
+                : 'hero-news__dot'
+            }
+            onClick={() => setActiveIndex(index)}
+            aria-label={`Ver noticia ${index + 1}`}
+          />
+        ))}
       </div>
     </section>
   )
