@@ -17,7 +17,7 @@ export default function NewsCard({
   slug
 }: NewsCardProps) {
   return (
-    <article className="news-card">
+    <Link to={`/noticias/${slug}`} className="news-card">
       <img
         className="news-card__image"
         src={image}
@@ -25,16 +25,9 @@ export default function NewsCard({
       />
 
       <div className="news-card__content">
-        <Link
-  to={`/categoria/${category
-    .toLowerCase()
-    .replaceAll(' ', '-')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')}`}
-  className="news-card__category"
->
-  {category}
-</Link>
+        <span className="news-card__category">
+          {category}
+        </span>
 
         <h3 className="news-card__title">
           {title}
@@ -44,13 +37,10 @@ export default function NewsCard({
           {excerpt}
         </p>
 
-        <Link
-          to={`/noticias/${slug}`}
-          className="news-card__button"
-        >
-          Leer más
-        </Link>
+        <span className="news-card__badge">
+          Reciente
+        </span>
       </div>
-    </article>
+    </Link>
   )
 }
