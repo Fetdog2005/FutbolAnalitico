@@ -145,3 +145,10 @@
   background: #1e293b;
   font-size: 12px;
 }
+.competition-logo-preview {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-top: 10px;
+}
