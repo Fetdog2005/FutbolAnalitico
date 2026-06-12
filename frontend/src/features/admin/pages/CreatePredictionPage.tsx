@@ -4,7 +4,10 @@ import {
   getCompetitions,
   getTeamsByCompetition
 } from '../../../services/contentService'
-import type { PredictionBlock } from '../../../shared/types/Prediction'
+import type {
+  PredictionBlock,
+  PredictionBlockItem
+} from '../../../shared/types/Prediction'
 import { slugify } from '../../../shared/utils/slugify'
 import './AdminForm.css'
 
@@ -36,9 +39,10 @@ export default function CreatePredictionPage() {
   const [blocks, setBlocks] = useState<PredictionBlock[]>([])
 
   const [blockTitle, setBlockTitle] = useState('')
-  const [teamAValue, setTeamAValue] = useState(50)
-  const [teamBValue, setTeamBValue] = useState(50)
-  const [blockDescription, setBlockDescription] = useState('')
+  const [items, setItems] = useState<PredictionBlockItem[]>([])
+
+  const [itemLabel, setItemLabel] = useState('')
+  const [itemValue, setItemValue] = useState('')
 
   useEffect(() => {
     loadCompetitions()
@@ -66,14 +70,32 @@ export default function CreatePredictionPage() {
     }
   }
 
-  function addBlock() {
-    if (!blockTitle || !blockDescription) {
-      alert('Completá título y descripción')
+  function addItem() {
+    if (!itemLabel || !itemValue) {
+      alert('Completá dato y valor')
       return
     }
 
-    if (teamAValue + teamBValue !== 100) {
-      alert('Los valores deben sumar 100%')
+    setItems([
+      ...items,
+      {
+        label: itemLabel,
+        value: itemValue
+      }
+    ])
+
+    setItemLabel('')
+    setItemValue('')
+  }
+
+  function addBlock() {
+    if (!blockTitle) {
+      alert('Completá el título del bloque')
+      return
+    }
+
+    if (items.length === 0) {
+      alert('Agregá al menos un dato')
       return
     }
 
@@ -81,16 +103,14 @@ export default function CreatePredictionPage() {
       ...blocks,
       {
         title: blockTitle,
-        teamAValue,
-        teamBValue,
-        description: blockDescription
+        items
       }
     ])
 
     setBlockTitle('')
-    setTeamAValue(50)
-    setTeamBValue(50)
-    setBlockDescription('')
+    setItems([])
+    setItemLabel('')
+    setItemValue('')
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -147,6 +167,10 @@ export default function CreatePredictionPage() {
       setDate('')
 
       setBlocks([])
+      setItems([])
+      setBlockTitle('')
+      setItemLabel('')
+      setItemValue('')
 
       setHomeProbability(50)
       setDrawProbability(25)
@@ -163,7 +187,6 @@ export default function CreatePredictionPage() {
       <form onSubmit={handleSubmit} className="admin-form">
         <label>
           Competición
-
           <select
             value={competitionId}
             onChange={(e) => handleCompetitionChange(e.target.value)}
@@ -180,7 +203,6 @@ export default function CreatePredictionPage() {
 
         <label>
           Fecha
-
           <input
             type="date"
             value={date}
@@ -190,7 +212,6 @@ export default function CreatePredictionPage() {
 
         <label>
           Equipo local
-
           <select
             value={homeTeamId}
             onChange={(e) => setHomeTeamId(e.target.value)}
@@ -207,7 +228,6 @@ export default function CreatePredictionPage() {
 
         <label>
           Equipo visitante
-
           <select
             value={awayTeamId}
             onChange={(e) => setAwayTeamId(e.target.value)}
@@ -228,51 +248,72 @@ export default function CreatePredictionPage() {
           type="number"
           value={homeProbability}
           onChange={(e) => setHomeProbability(Number(e.target.value))}
+          placeholder="Probabilidad local"
         />
 
         <input
           type="number"
           value={drawProbability}
           onChange={(e) => setDrawProbability(Number(e.target.value))}
+          placeholder="Probabilidad empate"
         />
 
         <input
           type="number"
           value={awayProbability}
           onChange={(e) => setAwayProbability(Number(e.target.value))}
+          placeholder="Probabilidad visitante"
         />
 
-        <h2>Bloques Analíticos</h2>
+        <h2>Bloques de datos</h2>
 
         <input
-          placeholder="Título"
+          placeholder="Título del bloque. Ej: Estadísticas esperadas"
           value={blockTitle}
           onChange={(e) => setBlockTitle(e.target.value)}
         />
 
         <input
-          type="number"
-          value={teamAValue}
-          onChange={(e) => setTeamAValue(Number(e.target.value))}
+          placeholder="Dato. Ej: Goles"
+          value={itemLabel}
+          onChange={(e) => setItemLabel(e.target.value)}
         />
 
         <input
-          type="number"
-          value={teamBValue}
-          onChange={(e) => setTeamBValue(Number(e.target.value))}
+          placeholder="Valor. Ej: 3.4"
+          value={itemValue}
+          onChange={(e) => setItemValue(e.target.value)}
         />
 
-        <textarea
-          rows={4}
-          value={blockDescription}
-          onChange={(e) => setBlockDescription(e.target.value)}
-        />
+        <button type="button" onClick={addItem}>
+          Agregar dato
+        </button>
+
+        <p>Datos en este bloque: {items.length}</p>
+
+        {items.map((item, index) => (
+          <p key={`${item.label}-${index}`}>
+            {item.label}: {item.value}
+          </p>
+        ))}
 
         <button type="button" onClick={addBlock}>
           Agregar bloque
         </button>
 
         <p>Bloques creados: {blocks.length}</p>
+
+        {blocks.map((block, index) => (
+          <div key={`${block.title}-${index}`}>
+            <h3>{block.title}</h3>
+
+            {block.items.map((item, itemIndex) => (
+              <p key={`${item.label}-${itemIndex}`}>
+                {item.label}: {item.value}
+              </p>
+            ))}
+          </div>
+        ))}
 
         <button type="submit">Crear predicción</button>
       </form>
