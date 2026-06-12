@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react'
 import { getNews } from '../../../services/newsService'
 import { getPredictions } from '../../../services/predictionService'
 
-import './DashboardPage.css'
-
 export default function DashboardPage() {
   const [newsCount, setNewsCount] = useState(0)
   const [predictionsCount, setPredictionsCount] = useState(0)
