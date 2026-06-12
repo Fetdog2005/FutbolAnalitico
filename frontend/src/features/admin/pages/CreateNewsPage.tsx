@@ -4,7 +4,8 @@ import {
   getCategories,
   getHashtags,
   getMedia,
-  searchMedia
+  searchMedia,
+  getTeams
 } from '../../../services/contentService'
 import './AdminForm.css'
 import { slugify } from '../../../shared/utils/slugify'
@@ -27,6 +28,12 @@ type Media = {
   hashtag?: string
 }
 
+type Team = {
+  _id: string
+  name: string
+  logo?: string
+}
+
 export default function CreateNewsPage() {
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
@@ -36,6 +43,7 @@ export default function CreateNewsPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [hashtagOptions, setHashtagOptions] = useState<Hashtag[]>([])
   const [mediaOptions, setMediaOptions] = useState<Media[]>([])
+  const [teamOptions, setTeamOptions] = useState<Team[]>([])
 
   const [selectedHashtags, setSelectedHashtags] = useState<string[]>([])
   const [selectedImageHashtag, setSelectedImageHashtag] = useState('')
@@ -43,7 +51,7 @@ export default function CreateNewsPage() {
   const [image, setImage] = useState('')
 
   const [teams, setTeams] = useState<string[]>([])
-  const [teamInput, setTeamInput] = useState('')
+  const [selectedTeam, setSelectedTeam] = useState('')
 
   const [sections, setSections] = useState<NewsSection[]>([])
   const [sectionType, setSectionType] = useState<NewsSection['type']>('text')
@@ -56,15 +64,22 @@ export default function CreateNewsPage() {
 
   async function loadContent() {
     try {
-      const [categoriesData, hashtagsData, mediaData] = await Promise.all([
+      const [
+        categoriesData,
+        hashtagsData,
+        mediaData,
+        teamsData
+      ] = await Promise.all([
         getCategories(),
         getHashtags(),
-        getMedia()
+        getMedia(),
+        getTeams()
       ])
 
       setCategories(categoriesData)
       setHashtagOptions(hashtagsData)
       setMediaOptions(mediaData)
+      setTeamOptions(teamsData)
     } catch (error) {
       console.error(error)
     }
@@ -99,10 +114,15 @@ export default function CreateNewsPage() {
   }
 
   function addTeam() {
-    if (!teamInput.trim()) return
+    if (!selectedTeam) return
 
-    setTeams([...teams, teamInput.trim()])
-    setTeamInput('')
+    if (teams.includes(selectedTeam)) {
+      alert('Ese equipo ya fue agregado')
+      return
+    }
+
+    setTeams([...teams, selectedTeam])
+    setSelectedTeam('')
   }
 
   function addSection() {
@@ -170,8 +190,12 @@ export default function CreateNewsPage() {
       setCompetition('')
       setImage('')
       setSelectedHashtags([])
+      setSelectedImageHashtag('')
       setTeams([])
       setSections([])
+      setSectionType('text')
+      setSectionContent('')
+      setSectionImage('')
     } catch (error) {
       console.error(error)
       alert('Error creando noticia')
@@ -270,20 +294,39 @@ export default function CreateNewsPage() {
           </label>
         ))}
 
-        <h2>Equipos</h2>
+        <h2>Equipos relacionados</h2>
 
-        <input
-          placeholder="Agregar equipo"
-          value={teamInput}
-          onChange={(e) => setTeamInput(e.target.value)}
-        />
+        <select
+          value={selectedTeam}
+          onChange={(e) => setSelectedTeam(e.target.value)}
+        >
+          <option value="">Seleccionar equipo</option>
+
+          {teamOptions.map((team) => (
+            <option key={team._id} value={team.name}>
+              {team.name}
+            </option>
+          ))}
+        </select>
 
         <button type="button" onClick={addTeam}>
           Agregar equipo
         </button>
 
         {teams.map((team, index) => (
-          <p key={`${team}-${index}`}>{team}</p>
+          <p key={`${team}-${index}`}>
+            {team}
+            <button
+              type="button"
+              onClick={() =>
+                setTeams(
+                  teams.filter((_, i) => i !== index)
+                )
+              }
+            >
+              Eliminar
+            </button>
+          </p>
         ))}
 
         <h2>Secciones de la noticia</h2>
