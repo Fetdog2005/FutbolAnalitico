@@ -13,8 +13,7 @@ export default function HeaderTop() {
   const [password, setPassword] = useState('')
   const [search, setSearch] = useState('')
 
-  const showPassword =
-  username.toLowerCase() === 'w4zn3'
+  const showPassword = username.toLowerCase() === 'w4zn3'
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -25,11 +24,17 @@ export default function HeaderTop() {
     setSearch('')
   }
 
-  async function handleLogin() {
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault()
+
     try {
       const data = await loginAdmin(username, password)
 
       localStorage.setItem('adminToken', data.token)
+
+      setOpen(false)
+      setUsername('')
+      setPassword('')
 
       navigate('/admin')
     } catch (error) {
@@ -50,44 +55,60 @@ export default function HeaderTop() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button type="submit">🔍</button>
+
+        <button type="submit" aria-label="Buscar">
+          🔍
+        </button>
       </form>
 
-      <div className="news-area admin-dropdown">
+      <div className="admin-dropdown">
         <button
+          type="button"
           className="news-btn"
-          onClick={() => setOpen(true)}
+          onClick={() => setOpen(!open)}
+          aria-label="Abrir acceso admin"
         >
           📰
         </button>
-      </div>
 
-      {open && (
-        <div className="admin-panel">
-          <h4>Acceso</h4>
+        {open && (
+          <form className="admin-panel" onSubmit={handleLogin}>
+            <div className="admin-panel__header">
+              <h4>Acceso admin</h4>
 
-          <input
-            placeholder="Nombre"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+              <button
+                type="button"
+                className="admin-panel__close"
+                onClick={() => setOpen(false)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
 
-          {showPassword && (
             <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Nombre"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
-          )}
 
-          {showPassword && (
-            <button onClick={handleLogin}>
-              Entrar
-            </button>
-          )}
-        </div>
-      )}
+            {showPassword && (
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            )}
+
+            {showPassword && (
+              <button type="submit">
+                Entrar
+              </button>
+            )}
+          </form>
+        )}
+      </div>
     </header>
   )
 }
