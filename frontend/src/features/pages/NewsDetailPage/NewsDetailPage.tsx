@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import type { News } from '../../../shared/types/News'
 import { Helmet } from 'react-helmet-async'
@@ -8,6 +8,7 @@ import './NewsDetailPage.css'
 
 export default function NewsDetailPage() {
   const { slug } = useParams()
+  const navigate = useNavigate()
 
   const [news, setNews] = useState<News | null>(null)
   const [loading, setLoading] = useState(true)
@@ -26,11 +27,11 @@ export default function NewsDetailPage() {
   }, [slug])
 
   if (loading) {
-    return <h1>Cargando...</h1>
+    return <h1 className="news-detail__status">Cargando...</h1>
   }
 
   if (!news) {
-    return <h1>Noticia no encontrada</h1>
+    return <h1 className="news-detail__status">Noticia no encontrada</h1>
   }
 
   return (
@@ -54,7 +55,35 @@ export default function NewsDetailPage() {
         />
       </Helmet>
 
-      <div className="news-detail">
+      <article className="news-detail">
+        <button
+          type="button"
+          className="news-detail__back"
+          onClick={() => navigate(-1)}
+        >
+          ← Volver
+        </button>
+
+        <header className="news-detail__header">
+          <span className="news-detail__category">
+            {news.category}
+          </span>
+
+          <h1 className="news-detail__title">
+            {news.title}
+          </h1>
+
+          <p className="news-detail__subtitle">
+            {news.subtitle}
+          </p>
+
+          {news.createdAt && (
+            <p className="news-detail__date">
+              {new Date(news.createdAt).toLocaleDateString('es-AR')}
+            </p>
+          )}
+        </header>
+
         {news.image && (
           <img
             className="news-detail__hero"
@@ -63,84 +92,68 @@ export default function NewsDetailPage() {
           />
         )}
 
-        <span className="news-detail__category">
-          {news.category}
-        </span>
+        <div className="news-detail__content">
+          {(news.sections || []).map((section, index) => {
+            switch (section.type) {
+              case 'text':
+                return (
+                  <p
+                    key={index}
+                    className="news-detail__text"
+                  >
+                    {section.content}
+                  </p>
+                )
 
-        <h1 className="news-detail__title">
-          {news.title}
-        </h1>
+              case 'image-right':
+                return (
+                  <section
+                    key={index}
+                    className="news-detail__section"
+                  >
+                    <p>{section.content}</p>
 
-        <p className="news-detail__subtitle">
-          {news.subtitle}
-        </p>
+                    {section.image && (
+                      <img
+                        src={section.image}
+                        alt=""
+                      />
+                    )}
+                  </section>
+                )
 
-        {news.createdAt && (
-          <p className="news-detail__date">
-            {new Date(news.createdAt).toLocaleDateString('es-AR')}
-          </p>
-        )}
+              case 'image-left':
+                return (
+                  <section
+                    key={index}
+                    className="news-detail__section news-detail__section--reverse"
+                  >
+                    {section.image && (
+                      <img
+                        src={section.image}
+                        alt=""
+                      />
+                    )}
 
-        {(news.sections || []).map((section, index) => {
-          switch (section.type) {
-            case 'text':
-              return (
-                <p
-                  key={index}
-                  className="news-detail__text"
-                >
-                  {section.content}
-                </p>
-              )
+                    <p>{section.content}</p>
+                  </section>
+                )
 
-            case 'image-right':
-              return (
-                <div
-                  key={index}
-                  className="news-detail__section"
-                >
-                  <p>{section.content}</p>
+              case 'image-full':
+                return section.image ? (
+                  <img
+                    key={index}
+                    className="news-detail__image-full"
+                    src={section.image}
+                    alt=""
+                  />
+                ) : null
 
-                  {section.image && (
-                    <img
-                      src={section.image}
-                      alt=""
-                    />
-                  )}
-                </div>
-              )
-
-            case 'image-left':
-              return (
-                <div
-                  key={index}
-                  className="news-detail__section news-detail__section--reverse"
-                >
-                  {section.image && (
-                    <img
-                      src={section.image}
-                      alt=""
-                    />
-                  )}
-
-                  <p>{section.content}</p>
-                </div>
-              )
-
-            case 'image-full':
-              return section.image ? (
-                <img
-                  key={index}
-                  className="news-detail__image-full"
-                  src={section.image}
-                  alt=""
-                />
-              ) : null
-
-            default:
-              return null
-          }
-        })}
+              default:
+                return null
+            }
+          })}
+        </div>
 
         {news.hashtags?.length > 0 && (
           <div className="news-detail__hashtags">
@@ -151,7 +164,7 @@ export default function NewsDetailPage() {
             ))}
           </div>
         )}
-      </div>
+      </article>
     </>
   )
 }

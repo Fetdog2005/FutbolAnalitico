@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import type { Prediction } from '../../../shared/types/Prediction'
 import { Helmet } from 'react-helmet-async'
@@ -8,6 +8,7 @@ import './PredictionDetailPage.css'
 
 export default function PredictionDetailPage() {
   const { slug } = useParams()
+  const navigate = useNavigate()
 
   const [prediction, setPrediction] = useState<Prediction | null>(null)
   const [loading, setLoading] = useState(true)
@@ -26,11 +27,11 @@ export default function PredictionDetailPage() {
   }, [slug])
 
   if (loading) {
-    return <h1>Cargando...</h1>
+    return <h1 className="prediction-detail__status">Cargando...</h1>
   }
 
   if (!prediction) {
-    return <h1>Predicción no encontrada</h1>
+    return <h1 className="prediction-detail__status">Predicción no encontrada</h1>
   }
 
   return (
@@ -63,11 +64,27 @@ export default function PredictionDetailPage() {
         />
       </Helmet>
 
-      <div className="prediction-detail">
-        <div className="prediction-detail__header">
+      <article className="prediction-detail">
+        <button
+          type="button"
+          className="prediction-detail__back"
+          onClick={() => navigate(-1)}
+        >
+          ← Volver
+        </button>
+
+        <header className="prediction-detail__header">
           <span className="competition">
             {prediction.competition}
           </span>
+
+          <h1 className="prediction-detail__title">
+            {prediction.homeTeam} vs {prediction.awayTeam}
+          </h1>
+
+          <p className="date">
+            {prediction.date}
+          </p>
 
           <div className="prediction-detail__teams">
             <div className="prediction-detail__team">
@@ -86,47 +103,45 @@ export default function PredictionDetailPage() {
               <span>{prediction.awayTeam}</span>
             </div>
           </div>
+        </header>
 
-          <p className="date">
-            {prediction.date}
-          </p>
-        </div>
+        <section className="prediction-detail__summary">
+          <div className="prediction-detail__probabilities">
+            <div>
+              <span>Local</span>
+              <strong>{prediction.homeProbability}%</strong>
+            </div>
 
-        <div className="prediction-detail__probabilities">
-          <div>
-            <span>Local</span>
-            <strong>{prediction.homeProbability}%</strong>
+            <div>
+              <span>Empate</span>
+              <strong>{prediction.drawProbability}%</strong>
+            </div>
+
+            <div>
+              <span>Visitante</span>
+              <strong>{prediction.awayProbability}%</strong>
+            </div>
           </div>
 
-          <div>
-            <span>Empate</span>
-            <strong>{prediction.drawProbability}%</strong>
+          <div className="prediction-detail__probability-bar">
+            <div
+              className="prediction-detail__bar-home"
+              style={{ width: `${prediction.homeProbability}%` }}
+            />
+
+            <div
+              className="prediction-detail__bar-draw"
+              style={{ width: `${prediction.drawProbability}%` }}
+            />
+
+            <div
+              className="prediction-detail__bar-away"
+              style={{ width: `${prediction.awayProbability}%` }}
+            />
           </div>
+        </section>
 
-          <div>
-            <span>Visitante</span>
-            <strong>{prediction.awayProbability}%</strong>
-          </div>
-        </div>
-
-        <div className="prediction-detail__probability-bar">
-          <div
-            className="prediction-detail__bar-home"
-            style={{ width: `${prediction.homeProbability}%` }}
-          />
-
-          <div
-            className="prediction-detail__bar-draw"
-            style={{ width: `${prediction.drawProbability}%` }}
-          />
-
-          <div
-            className="prediction-detail__bar-away"
-            style={{ width: `${prediction.awayProbability}%` }}
-          />
-        </div>
-
-        <div className="prediction-detail__blocks">
+        <section className="prediction-detail__blocks">
           {(prediction.blocks || []).map((block, index) => (
             <div key={`${block.title}-${index}`} className="block">
               <h3>{block.title}</h3>
@@ -144,8 +159,8 @@ export default function PredictionDetailPage() {
               </div>
             </div>
           ))}
-        </div>
-      </div>
+        </section>
+      </article>
     </>
   )
 }
