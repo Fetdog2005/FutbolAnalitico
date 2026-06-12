@@ -109,13 +109,30 @@ export default function PredictionDetailPage() {
           </div>
         </div>
 
+        <div className="prediction-detail__probability-bar">
+          <div
+            className="prediction-detail__bar-home"
+            style={{ width: `${prediction.homeProbability}%` }}
+          />
+
+          <div
+            className="prediction-detail__bar-draw"
+            style={{ width: `${prediction.drawProbability}%` }}
+          />
+
+          <div
+            className="prediction-detail__bar-away"
+            style={{ width: `${prediction.awayProbability}%` }}
+          />
+        </div>
+
         <div className="prediction-detail__blocks">
-          {prediction.blocks.map((block, index) => (
+          {(prediction.blocks || []).map((block, index) => (
             <div key={`${block.title}-${index}`} className="block">
               <h3>{block.title}</h3>
 
               <div className="block-data-list">
-                {block.items.map((item, itemIndex) => (
+                {(block.items || []).map((item, itemIndex) => (
                   <div
                     key={`${item.label}-${itemIndex}`}
                     className="block-data-item"
