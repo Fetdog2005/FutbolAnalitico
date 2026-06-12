@@ -34,26 +34,25 @@ export default function PredictionDetailPage() {
   }
 
   return (
-     <>
-    <Helmet>
-      <meta
-  property="og:title"
-  content={`${prediction.homeTeam} vs ${prediction.awayTeam} Prediction`}
-/>
+    <>
+      <Helmet>
+        <meta
+          property="og:title"
+          content={`${prediction.homeTeam} vs ${prediction.awayTeam} Prediction`}
+        />
 
-<meta
-  property="og:description"
-  content={`${prediction.homeTeam} vs ${prediction.awayTeam} prediction, probabilities and analysis.`}
-/>
+        <meta
+          property="og:description"
+          content={`${prediction.homeTeam} vs ${prediction.awayTeam} prediction, probabilities and analysis.`}
+        />
 
-<meta
-  property="og:type"
-  content="article"
-/>
-<link
-  rel="canonical"
-  href={`https://futbolanalitico.com/predicciones/${prediction.slug}`}
-/>
+        <meta property="og:type" content="article" />
+
+        <link
+          rel="canonical"
+          href={`https://futbolanalitico.com/predicciones/${prediction.slug}`}
+        />
+
         <title>
           {prediction.homeTeam} vs {prediction.awayTeam} Prediction | Futbol Analítico
         </title>
@@ -64,100 +63,72 @@ export default function PredictionDetailPage() {
         />
       </Helmet>
 
-    <div className="prediction-detail">
+      <div className="prediction-detail">
+        <div className="prediction-detail__header">
+          <span className="competition">
+            {prediction.competition}
+          </span>
 
-      <div className="prediction-detail__header">
-        <span className="competition">
-          {prediction.competition}
-        </span>
+          <div className="prediction-detail__teams">
+            <div className="prediction-detail__team">
+              {prediction.homeLogo && (
+                <img src={prediction.homeLogo} alt={prediction.homeTeam} />
+              )}
+              <span>{prediction.homeTeam}</span>
+            </div>
 
-        <div className="prediction-detail__teams">
-  <div className="prediction-detail__team">
-    {prediction.homeLogo && (
-      <img src={prediction.homeLogo} alt={prediction.homeTeam} />
-    )}
-    <span>{prediction.homeTeam}</span>
-  </div>
+            <strong>vs</strong>
 
-  <strong>vs</strong>
+            <div className="prediction-detail__team">
+              {prediction.awayLogo && (
+                <img src={prediction.awayLogo} alt={prediction.awayTeam} />
+              )}
+              <span>{prediction.awayTeam}</span>
+            </div>
+          </div>
 
-  <div className="prediction-detail__team">
-    {prediction.awayLogo && (
-      <img src={prediction.awayLogo} alt={prediction.awayTeam} />
-    )}
-    <span>{prediction.awayTeam}</span>
-  </div>
-</div>
-
-        <p className="date">
-          {prediction.date}
-        </p>
-      </div>
-
-      <div className="prediction-detail__probabilities">
-        <div>
-          <span>Local</span>
-          <strong>
-            {prediction.homeProbability}%
-          </strong>
+          <p className="date">
+            {prediction.date}
+          </p>
         </div>
 
-        <div>
-          <span>Empate</span>
-          <strong>
-            {prediction.drawProbability}%
-          </strong>
+        <div className="prediction-detail__probabilities">
+          <div>
+            <span>Local</span>
+            <strong>{prediction.homeProbability}%</strong>
+          </div>
+
+          <div>
+            <span>Empate</span>
+            <strong>{prediction.drawProbability}%</strong>
+          </div>
+
+          <div>
+            <span>Visitante</span>
+            <strong>{prediction.awayProbability}%</strong>
+          </div>
         </div>
 
-        <div>
-          <span>Visitante</span>
-          <strong>
-            {prediction.awayProbability}%
-          </strong>
-        </div>
-      </div>
-
-      <div className="prediction-detail__blocks">
-        {prediction.blocks.map(
-          (block, index) => (
-            <div
-              key={index}
-              className="block"
-            >
+        <div className="prediction-detail__blocks">
+          {prediction.blocks.map((block, index) => (
+            <div key={`${block.title}-${index}`} className="block">
               <h3>{block.title}</h3>
 
-              <div className="block-stats">
-
-  <div className="block-values">
-    <span>{block.teamAValue}%</span>
-    <span>{block.teamBValue}%</span>
-  </div>
-
-  <div className="block-bar">
-    <div
-      className="block-bar-home"
-      style={{
-        width: `${block.teamAValue}%`
-      }}
-    />
-
-    <div
-      className="block-bar-away"
-      style={{
-        width: `${block.teamBValue}%`
-      }}
-    />
-  </div>
-
-</div>
-
-              <p>{block.description}</p>
+              <div className="block-data-list">
+                {block.items.map((item, itemIndex) => (
+                  <div
+                    key={`${item.label}-${itemIndex}`}
+                    className="block-data-item"
+                  >
+                    <span>{item.label}</span>
+                    <strong>{item.value}</strong>
+                  </div>
+                ))}
+              </div>
             </div>
-          )
-        )}
+          ))}
+        </div>
       </div>
-
-    </div>
     </>
   )
 }
