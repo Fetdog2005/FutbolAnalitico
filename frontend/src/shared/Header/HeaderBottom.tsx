@@ -9,7 +9,9 @@ export default function HeaderBottom() {
       <Link to="/mundial-2026">
         Mundial 2026
       </Link>
-
+<Link to="/admin">
+        Admin
+      </Link>
       <Link to="/seleccion-argentina">
         Selección Argentina
       </Link>
