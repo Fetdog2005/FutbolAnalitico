@@ -42,7 +42,8 @@ export type News = {
   mediaIds?: string[]
 
   sections: NewsSection[]
-
+  competition?: string
+  teams?: string[]
   hashtags: string[]
 
   createdAt: string

@@ -18,59 +18,93 @@ export default function SearchPage() {
 
   const [news, setNews] = useState<News[]>([])
   const [predictions, setPredictions] = useState<Prediction[]>([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     async function loadResults() {
-      const [newsData, predictionsData] = await Promise.all([
-        getNews(),
-        getPredictions()
-      ])
+      try {
+        setLoading(true)
 
-      const search = query.toLowerCase()
+        const [newsData, predictionsData] = await Promise.all([
+          getNews(),
+          getPredictions()
+        ])
 
-      setNews(
-        newsData.filter((item: News) =>
-          item.title.toLowerCase().includes(search) ||
-          (item.subtitle || '').toLowerCase().includes(search) ||
-          item.category.toLowerCase().includes(search)
+        const search = query.toLowerCase().trim()
+
+        setNews(
+          newsData.filter((item: News) =>
+            item.title.toLowerCase().includes(search) ||
+            (item.subtitle || '').toLowerCase().includes(search) ||
+            (item.category || '').toLowerCase().includes(search)
+          )
         )
-      )
 
-      setPredictions(
-        predictionsData.filter((item: Prediction) =>
-          item.homeTeam.toLowerCase().includes(search) ||
-          item.awayTeam.toLowerCase().includes(search) ||
-          item.competition.toLowerCase().includes(search)
+        setPredictions(
+          predictionsData.filter((item: Prediction) =>
+            item.homeTeam.toLowerCase().includes(search) ||
+            item.awayTeam.toLowerCase().includes(search) ||
+            item.competition.toLowerCase().includes(search)
+          )
         )
-      )
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    if (query) {
+    if (query.trim()) {
       loadResults()
+    } else {
+      setNews([])
+      setPredictions([])
     }
   }, [query])
 
   const hasResults = news.length > 0 || predictions.length > 0
 
   return (
-    <section className="news-page">
-      <div className="news-page__header">
+    <main className="search-page">
+      <section className="search-page__hero">
         <span>Resultados</span>
-        <h1>Búsqueda: {query}</h1>
-      </div>
 
-      {!hasResults && (
-        <p>No se encontraron resultados para "{query}".</p>
+        <h1>
+          Búsqueda: {query || 'Sin término'}
+        </h1>
+
+        <p>
+          Noticias y predicciones relacionadas con tu búsqueda.
+        </p>
+
+        <strong>
+          {news.length + predictions.length} resultados encontrados
+        </strong>
+      </section>
+
+      {loading && (
+        <div className="search-page__empty">
+          Buscando resultados...
+        </div>
       )}
 
-      {news.length > 0 && (
-        <>
-          <h2>Noticias</h2>
+      {!loading && !hasResults && (
+        <div className="search-page__empty">
+          No se encontraron resultados para "{query}".
+        </div>
+      )}
 
-          <div className="news-page__grid">
+      {!loading && news.length > 0 && (
+        <section className="search-page__section">
+          <div className="search-page__section-header">
+            <span>Noticias</span>
+            <h2>Resultados en noticias</h2>
+          </div>
+
+          <div className="search-page__grid">
             {news.map((item) => (
               <NewsCard
-                key={item._id}
+                key={item._id || item.slug}
                 image={item.image}
                 category={item.category}
                 title={item.title}
@@ -79,17 +113,20 @@ export default function SearchPage() {
               />
             ))}
           </div>
-        </>
+        </section>
       )}
 
-      {predictions.length > 0 && (
-        <>
-          <h2>Predicciones</h2>
+      {!loading && predictions.length > 0 && (
+        <section className="search-page__section">
+          <div className="search-page__section-header">
+            <span>Predicciones</span>
+            <h2>Resultados en predicciones</h2>
+          </div>
 
-          <div className="news-page__grid">
+          <div className="search-page__grid">
             {predictions.map((prediction) => (
               <PredictionCard
-                key={prediction._id}
+                key={prediction._id || prediction.slug}
                 slug={prediction.slug}
                 competition={prediction.competition}
                 homeTeam={prediction.homeTeam}
@@ -103,8 +140,8 @@ export default function SearchPage() {
               />
             ))}
           </div>
-        </>
+        </section>
       )}
-    </section>
+    </main>
   )
 }

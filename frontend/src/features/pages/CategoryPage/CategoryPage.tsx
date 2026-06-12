@@ -12,12 +12,19 @@ import type { Prediction } from '../../../shared/types/Prediction'
 
 import './CategoryPage.css'
 
-function normalize(text: string) {
+function normalize(text: string = '') {
   return text
     .toLowerCase()
+    .trim()
     .replaceAll(' ', '-')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+}
+
+function formatTitle(text: string = '') {
+  return text
+    .replaceAll('-', ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
 export default function CategoryPage() {
@@ -25,46 +32,90 @@ export default function CategoryPage() {
 
   const [news, setNews] = useState<News[]>([])
   const [predictions, setPredictions] = useState<Prediction[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadCategory() {
-      const [newsData, predictionsData] = await Promise.all([
-        getNews(),
-        getPredictions()
-      ])
+      try {
+        setLoading(true)
 
-      setNews(
-        newsData.filter((item: News) =>
-          normalize(item.category) === category
-        )
-      )
+        const [newsData, predictionsData] = await Promise.all([
+          getNews(),
+          getPredictions()
+        ])
 
-      setPredictions(
-        predictionsData.filter((item: Prediction) =>
-          normalize(item.competition) === category
+        setNews(
+          newsData.filter((item: News) =>
+            normalize(item.category) === category ||
+            item.hashtags?.some((tag) => normalize(tag) === category) ||
+            item.teams?.some((team) => normalize(team) === category) ||
+            normalize(item.competition) === category
+          )
         )
-      )
+
+        setPredictions(
+          predictionsData.filter((item: Prediction) =>
+            normalize(item.competition) === category ||
+            normalize(item.homeTeam) === category ||
+            normalize(item.awayTeam) === category
+          )
+        )
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
     }
 
     loadCategory()
   }, [category])
 
-  const title = category?.replaceAll('-', ' ') || ''
+  const title = formatTitle(category)
+  const hasResults = news.length > 0 || predictions.length > 0
+
+  if (loading) {
+    return (
+      <main className="category-page">
+        <div className="category-page__empty">
+          Cargando categoría...
+        </div>
+      </main>
+    )
+  }
 
   return (
-    <section className="news-page">
-      <div className="news-page__header">
+    <main className="category-page">
+      <section className="category-page__hero">
         <span>Categoría</span>
+
         <h1>{title}</h1>
-      </div>
+
+        <p>
+          Noticias, predicciones y contenido relacionado con {title}.
+        </p>
+
+        <strong>
+          {news.length + predictions.length} contenidos encontrados
+        </strong>
+      </section>
+
+      {!hasResults && (
+        <div className="category-page__empty">
+          Todavía no hay contenido relacionado con {title}.
+        </div>
+      )}
 
       {news.length > 0 && (
-        <>
-          <h2>Noticias</h2>
-          <div className="news-page__grid">
+        <section className="category-page__section">
+          <div className="category-page__section-header">
+            <span>Noticias</span>
+            <h2>Últimas noticias</h2>
+          </div>
+
+          <div className="category-page__grid">
             {news.map((item) => (
               <NewsCard
-                key={item._id}
+                key={item._id || item.slug}
                 image={item.image}
                 category={item.category}
                 title={item.title}
@@ -73,16 +124,20 @@ export default function CategoryPage() {
               />
             ))}
           </div>
-        </>
+        </section>
       )}
 
       {predictions.length > 0 && (
-        <>
-          <h2>Predicciones</h2>
-          <div className="news-page__grid">
+        <section className="category-page__section">
+          <div className="category-page__section-header">
+            <span>Predicciones</span>
+            <h2>Análisis relacionados</h2>
+          </div>
+
+          <div className="category-page__grid">
             {predictions.map((prediction) => (
               <PredictionCard
-                key={prediction._id}
+                key={prediction._id || prediction.slug}
                 slug={prediction.slug}
                 competition={prediction.competition}
                 homeTeam={prediction.homeTeam}
@@ -96,8 +151,8 @@ export default function CategoryPage() {
               />
             ))}
           </div>
-        </>
+        </section>
       )}
-    </section>
+    </main>
   )
 }
