@@ -16,8 +16,11 @@ export default function CreateNewsPage() {
   const [sectionType, setSectionType] = useState<NewsSection['type']>('text')
   const [sectionContent, setSectionContent] = useState('')
   const [sectionImage, setSectionImage] = useState('')
+  const [competition, setCompetition] = useState('')
+  const [teams, setTeams] = useState<string[]>([])
+  const [teamInput, setTeamInput] = useState('')
 
-  async function handleImageUpload(
+    async function handleImageUpload(
   e: React.ChangeEvent<HTMLInputElement>
 ) {
   const file = e.target.files?.[0]
@@ -102,20 +105,23 @@ async function handleSectionImageUpload(
     e.preventDefault()
 
     const news = {
-      slug: slugify(title),
+ slug: slugify(title),
 
-      title,
-      subtitle,
-      category,
-      image,
+  title,
+  subtitle,
+  category,
+  competition,
+  image,
 
-      hashtags: hashtags
-  .split(',')
-  .map(tag => tag.trim())
-  .filter(Boolean),
+  hashtags: hashtags
+    .split(',')
+    .map(tag => tag.trim())
+    .filter(Boolean),
 
-      sections
-    }
+  teams,
+
+  sections
+}
 
     try {
       const result =
@@ -163,8 +169,30 @@ async function handleSectionImageUpload(
             setCategory(e.target.value)
           }
         />
-
         <input
+          placeholder="Competencia (ej: Mundial, Champions)"
+          value={competition}
+          onChange={(e) => setCompetition(e.target.value)}
+        />
+        <input
+            placeholder="Agregar equipo"
+            value={teamInput}
+            onChange={(e) => setTeamInput(e.target.value)}
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              if (!teamInput.trim()) return
+
+              setTeams([...teams, teamInput.trim()])
+              setTeamInput('')
+            }}
+          >
+            Agregar equipo
+          </button>
+        <input
+        
           placeholder="Hashtags separados por coma"
           value={hashtags}
           onChange={(e) =>
@@ -253,7 +281,7 @@ async function handleSectionImageUpload(
         }}
       />
     )}
-
+  
     <button
       type="button"
       onClick={() =>
